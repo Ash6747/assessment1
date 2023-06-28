@@ -1,0 +1,64 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        int[] nums = {1, 3, 2, 2, -4, -6, -2, 8};
+        int target = 4;
+        List<List<int[]>> ans = new ArrayList<>();//ans of the problem statement
+        int limit = recursiveAddition(nums, nums.length - 1);
+        System.out.println("max sum of numbers in the array:"+limit);
+        while(target <= limit){
+            List<int[]> combinations = findCombinations(nums, target);
+            System.out.println("Combinations for target value " + target + ":");
+            printCombinations(combinations);
+            ans.add(combinations);
+
+            target *=2;
+        }
+    }
+
+    public static int recursiveAddition(int[] array, int index) {
+        if (index < 0) {
+            return 0;  // Base case: stop recursion when index is less than 0
+        }
+
+        int currentNumber = array[index];
+        if (currentNumber > 0) {
+            return currentNumber + recursiveAddition(array, index - 1);
+        } else {
+            return recursiveAddition(array, index - 1);
+        }
+    }
+
+    public static List<int[]> findCombinations(int[] nums, int target) {
+        List<int[]> combinations = new ArrayList<>();
+        Arrays.sort(nums);
+        backtrack(combinations, new ArrayList<>(), nums, target, 0);
+        return combinations;
+    }
+
+    private static void backtrack(List<int[]> combinations, List<Integer> current, int[] nums, int target, int start) {
+        if (target == 0) {
+            combinations.add(current.stream().mapToInt(Integer::intValue).toArray());
+            return;
+        }
+
+        for (int i = start; i < nums.length; i++) {
+            if (nums[i] > target)
+                break;
+            if (i > start && nums[i] == nums[i - 1])
+                continue;
+            current.add(nums[i]);
+            backtrack(combinations, current, nums, target - nums[i], i + 1);
+            current.remove(current.size() - 1);
+        }
+    }
+
+    public static void printCombinations(List<int[]> combinations) {
+        for (int[] combination : combinations) {
+            System.out.println(Arrays.toString(combination));
+        }
+    }
+}
